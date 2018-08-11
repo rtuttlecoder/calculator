@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>CSS Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+    @import url('https://fonts.googleapis.com/css?family=Space+Mono');
+    * { box-sizing: border-box; }
+    body {
+        background: #F6F6F6;
+        padding-bottom: 30px;
+        padding-top: 30px;
+    }
+    .calculator {
+        max-width: 400px;
+        margin: 0 auto;
+        border: 2px solid #111;
+        border-radius: 5px;
+    }
+    .calc-button {
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid #111;
+        padding: 20px;
+        color: #EEE;
+        border-radius: 5px;
+        font-size: 22px;
+        cursor: pointer;
+    }
+    .calculator input {
+        background: none;
+        border: none;
+        box-shadow: none;
+        outline: none;
+        padding: 10px;
+        width: 100%;
+        border-bottom: 2px solid #111;
+        color: #333;
+        text-align: right;
+        font-size: 40px;
+        border-radius: 0;
+    }
+    .calculator-buttons {
+        padding: 20px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-gap: 15px;
+    }
+    .is-zero, .is-clear { grid-column: span 3; }
+    .is-clear { background: #3572DB; }
+    .is-equals { background: #28D060; }
+    .calculator input, .calc-button { font-family: 'Space Mono'; }
+    </style>
+</head>
+<body>
+    <script>
+            (function() {
+                var el = function(element) {
+                    if (element.charAt(0) === "#") {
+                        return document.querySelector(element);
+                    }
+                    return document.querySelectorAll(element);
+                };
+        
+                var viewer = el("#viewer"),
+                    equals = el("#equals"),
+                    nums   = el(".num"),
+                    ops    = el(".ops"),
+                    theNum = "",
+                    oldNum = "",
+                    resultNum,
+                    operator;
+        
+                var setNum = function() {
+                    if (resultNum) {
+                        theNum = this.getAttribute("data-num");
+                        resultNum = "";
+                    } else {
+                        theNum += this.getAttribute("data-num");
+                    }
+                    viewer.innerHTML = theNum;
+                };
+        
+                var moveNum = function() {
+                    oldNum = theNum;
+                    theNum = "";
+                    operator = this.getAttribute("data-ops");
+                    equals.setAttribute("data-result", "");
+                };
+        
+                var displayNum = function() {
+                    oldNum = parseFloat(oldNum);
+                    theNum = parseFloat(theNum);
+                    switch (operator) {
+                        case "plus":
+                            resultNum = oldNum + theNum;
+                            break;
+                        case "minus":
+                            resultNum = oldNum - theNum;
+                            break;
+                        case "times":
+                            resultNum = oldNum * theNum;
+                            break;
+                        case "divide by":
+                            resultNum = oldNum / theNum;
+                            break;
+                        default:
+                            resultNum = theNum;
+                    }
+                    if (!isFinite(resultNum)) {
+                        if (isNaN(resultNum)) {
+                            resultNum = "You broke it!";
+                        } else {
+                            resultNum = "Look at what you've done!";
+                            el('#calculator').classList.add("broken");
+                            el('#reset').classLilst.add("show");
+                        }
+                    }
+                    viewer.innerHTML = resultNum;
+                    equals.setAttribute("data-result", resultNum);
+                    oldNum = 0;
+                    theNum = resultNum;
+                };
+                
+                var clearAll = function() {
+                    oldNum = "";
+                    theNum = "";
+                    viewer.innerHTML = "0";
+                    equals.setAttribute("data-result", resultNum);
+                };
+        
+                for (var i = 0, l = nums.length; i < l; i++) {
+                    nums[i].onclick = setNum;
+                }
+                
+                for (var i = 0, l = ops.length; i < l; i++) {
+                    ops[i].onclick = moveNum;
+                }
+        
+                // equals.onclick = displayNum;
+                // el("#clear").onclick = clearAll;
+                // el("#reset").onclick = function() {
+                //    window.location = window.location;
+                // };
+            }());
+    </script>
+    <div class="calculator" id="calculator">
+        <input type="number" id="viewer" value="0">
+        <div class="calculator-buttons">
+            <button class="calc-button is-clear" id="clear">C</button>
+            <button class="calc-button ops" data-ops="divide by">÷</button>
+
+            <button class="calc-button num" data-num="7">7</button>
+            <button class="calc-button num" data-num="8">8</button>
+            <button class="calc-button num" data-num="9">9</button>
+            <button class="calc-button ops" data-ops="times">×</button>
+
+            <button class="calc-button num" data-num="4">4</button>
+            <button class="calc-button num" data-num="5">5</button>
+            <button class="calc-button num" data-num="6">6</button>
+            <button class="calc-button ops" data-ops="minus">−</button>
+
+            <button class="calc-button num" data-num="1">1</button>
+            <button class="calc-button num" data-num="2">2</button>
+            <button class="calc-button num" data-num="3">3</button>
+            <button class="calc-button ops" data-ops="plus">&plus;</button>
+
+            <button class="calc-button is-zero num" data-num="0">0</button>
+            <button class="calc-button is-equals" id="equals" data-result="">&equals;</button>
+        </div>
+    </div>
+</body>
+</html>
